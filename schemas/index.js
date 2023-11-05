@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 
 const connect = () => {
   mongoose
-    .connect("mongodb://localhost:27017/spa_mall")
+    .connect("mongodb+srv://YoungWoo:w153468@cluster0.enhu1oz.mongodb.net/")
     .catch(err => console.log(err));
 };
 

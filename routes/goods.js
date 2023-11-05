@@ -56,7 +56,8 @@ router.post("/goods/:goodsId/cart", async(req,res) => {
 
   const existsCarts = await Cart.find({goodsId});
   if (existsCarts.length){ //existsCart 이 변수의 길이가 있을때는, 에러 발생!
-    return res.status(400).json({
+    return res.status(400).json
+    ({
       success:false,
       errorMessage:"이미 장바구니에 해당하는 상품이 존재합니다.",
     })
@@ -73,19 +74,20 @@ router.put("/goods/:goodsId/cart", async(req,res) => {
 
   const existsCarts = await Cart.find({goodsId});
   if(existsCarts.length){
-    await Cart.updateOne(
+    await Cart.updateOne( // 하나만 수정하는 코드
       {goodsId: goodsId},
       {$set: {quantity:quantity}}
       );
   }
   res.status(200).json({success:true});
 })
+
 router.delete("/goods/:goodsId/cart", async(req, res) => {
   const {goodsId} = req.params;
 
   const existsCarts = await Cart.find({goodsId});
   if(existsCarts.length){
-    await Cart.deleteOne({goodsId});
+    await Cart.deleteOne({goodsId}); // _id가 뭔지 
   }
 
   res.json({result:"success"});
