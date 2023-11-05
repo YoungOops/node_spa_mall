@@ -112,5 +112,7 @@ router.post("/goods/", async (req,res) => { // 어싱크, 동기적으로 처리
   // 유니크 무조건 고유값들어와야해서 첫쨰 둘째 둘다 1로 들어오면 안됨.
   // 라우터에서도 그래서 검증 해야 한다.
 
+
+  
 module.exports = router;
 
