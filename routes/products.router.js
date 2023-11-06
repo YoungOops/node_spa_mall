@@ -64,7 +64,7 @@ router.get("/products/:productId", async (req, res) => {
 });
 
 //---------------------------------- 여기까지 다 떠먹여주셨습니다... 다형님께서
-//아래는 가이드 받고 제가 해보았습니다.
+//아래는 가이드 받고 제가 해보았습니다. (결국 86번째 줄 도움 받았습니다.)
 
 
 // await Products.updateOne({ _id:id },{title,content,author}) 일괄 수정용으로 받은 코드
@@ -81,7 +81,7 @@ router.put("/products/:productId", async (req, res) => {
 
         const existsProducts = await Products.find({ _id: productId });
 
-        if (existsProducts.length !== 0) {//existsProducts 값이 존재할 때만 실행
+        if (existsProducts.length !== 0) {//existsProducts 값이 존재할 때만 실행?
             const product = existsProducts[0] //한 개를 뜻하는 듯 하다
             if (product.password === password) {
                 await Products.updateOne( // 업데이트 할 것이다. 프로덕츠를
@@ -97,14 +97,11 @@ router.put("/products/:productId", async (req, res) => {
                             status: status
                         }
                     }
-                ); 
-                
+                );
             } else {
-                return res.status(200).json({ success: true, message: "상품 정보 수정했습니다." });
-            } 
-            
+                return res.status(200).json({message: "상품 정보 수정했습니다." });
+            }
         } return res.status(401).json({ message: "상품을 수정할 권한이 없습니다." });
-        
         //  else {
         //     res.status(404).json({ success: false, message: "상품 조회에 실패하였습니다." });
         // }
@@ -112,44 +109,44 @@ router.put("/products/:productId", async (req, res) => {
     catch {
         return res.status(404).json({ errorMessage: '데이터 형식이 올바르지 않습니다.' })
     }
-
 });
-
-
-
 
 // 상품 삭제
 router.delete("/products/:productId", async (req, res) => {
-    const { productId } = req.params;
+    try {
+
+        const { productId } = req.params;
+        const { password } = req.body;
 
     // await Cart.deleteOne({_id:productId});
-    const existsProducts = await cart.find({ productId });
-    if (existsProducts.length) {
-        await Product.deletOne({ _id: productId });
-    }
+    const existsProducts = await Products.find({ _id: productId });
+    if (existsProducts !== true) {
+        const product = existsProducts[0]
+        if (product.password === password){
+            await Product.deletOne(
+                { _id: productId },
+                {$set: {password: password}}
+                
+            );
+        }
+        return res.json({ message: "상품을 삭제하였습니다." });
 
-    res.json({ message: "상품을 삭제하였습니다." });
-})
+    } else {
+        return res.status(401).json({message: "상품을 수정할 권한이 없습니다." });
+    }
+    
+
+} catch {
+    return res.status(404).json({ errorMessage: '데이터 형식이 올바르지 않습니다.' })
+}
+
+});
 
 module.exports = router;
 
-
-
-//챗 쥐피티 put
-// router.put("/products/:productId", async (req, res) => {
-//     const { productId } = req.params;
-//     const { title, content, author } = req.body;
-
-//     // 일괄 수정
-//     const existsProduct = await Products.findById(productId);
-//     if (existsProduct) {
-//         existsProduct.title = title;
-//         existsProduct.content = content;
-//         // existsProduct.author = author;
-
-//         await existsProduct.save();
-//         res.status(200).json({ success: true });
-//     } else {
-//         res.status(400).json({ success: false, message: "상품이 존재하지 않습니다." });
-//     }
-// });
+// # 400 body 또는 params를 입력받지 못한 경우
+// { message: '데이터 형식이 올바르지 않습니다.' }
+// # 404 productId에 해당하는 상품이 존재하지 않을 경우
+// { message: 상품 조회에 실패하였습니다. }
+// # 401 상품의 비밀번호가 일치하지 않을 경우
+// { message: 상품을 삭제할 권한이 존재하지 않습니다. }
