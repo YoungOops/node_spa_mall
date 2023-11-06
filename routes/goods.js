@@ -117,4 +117,3 @@ router.post("/goods/", async (req,res) => { // 어싱크, 동기적으로 처리
 
   
 module.exports = router;
-
