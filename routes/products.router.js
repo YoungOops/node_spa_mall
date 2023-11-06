@@ -55,7 +55,7 @@ router.get("/products/:productId", async (req, res) => {
         const product = products.filter((p) => productId === p._id.toString()); // p는 필터 돌려고 만든거 같음
         if (product.length === 0) {
             return res.status(404).json({ message: "상품 조회에 실패하였습니다." });
-        }
+        } //제이슨 형태로 리턴 값 줄 것이다.
         return res.status(200).json({ data: product[0] })
     }
     catch {
@@ -97,7 +97,7 @@ router.put("/products/:productId", async (req, res) => {
                             status: status
                         }
                     }
-                ); //제이슨 형태로 리턴 값 줄 것이다.
+                ); 
                 
             } else {
                 return res.status(200).json({ success: true, message: "상품 정보 수정했습니다." });
