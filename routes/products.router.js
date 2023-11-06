@@ -47,7 +47,7 @@ router.get("/products", async (req, res) => {
 // 상세 조회
 router.get("/products/:productId", async (req, res) => {
     try {
-        console.log(req.params)
+        console.log(req.params); //req.params: 라우터 매개 변수에 대한 정보가 담긴 객체입니다.
 
         const { productId } = req.params;
         const products = await Products.find({});
@@ -64,42 +64,53 @@ router.get("/products/:productId", async (req, res) => {
 });
 
 //---------------------------------- 여기까지 다 떠먹여주셨습니다... 다형님께서
-//아래는 가이드 받고 제가 해보았습니다. 오류 난 것은 그냥 쥐피티로 해결 할까 하다가 그냥 두었습니다.
-//모르면 모르는대로... 있는 모습 그대로 제출하는게 맞는 것 같다고 생각했습니다.... 
+//아래는 가이드 받고 제가 해보았습니다.
 
 
 // await Products.updateOne({ _id:id },{title,content,author}) 일괄 수정용으로 받은 코드
+//아이디랑 바디 받기 updateOne( // 하나만 수정하는 코드
 
 // 상품 수정
 router.put("/products/:productId", async (req, res) => {
-    //아이디랑 바디 받기 updateOne( // 하나만 수정하는 코드
-    const { productId } = req.params;
-    const { title, content, password, status } = req.body;
-
-    // 일괄 수정
-    const existsProducts = await Products.find({ _id: productId });
-
     try {
-        if (existsProducts.length) {
-            await Products.updateOne(
-                { _id: productId },
-                {$set:
-                    {
-                        title: title,
-                        content: content,
-                        password: password,
-                        status: status
-                    }
-                }
-            );
-            res.status(200).json({ success: true, message: "상품 정보 수정했습니다." });
-        } else {
-            res.status(404).json({ success: false, message: "상품이 존재하지 않습니다." });
-        }
-    }
+        console.log(req.params);
 
+        const { productId } = req.params;
+        const { title, content, password, status } = req.body;
+        // const products = await Products.find({password}); ?
+
+        const existsProducts = await Products.find({ _id: productId });
+
+        if (existsProducts.length !== 0) {//existsProducts 값이 존재할 때만 실행
+            const product = existsProducts[0] //한 개를 뜻하는 듯 하다
+            if (product.password === password) {
+                await Products.updateOne( // 업데이트 할 것이다. 프로덕츠를
+                    // 만약에 _아이디에 해당하는 값이 있을 때
+                    //우리는 수정을 할거다 타이틀을 타이틀에 있는 값으로 왼쪽이 찾는 것, 오른쪽이 값을 수정한다.
+                    // 오른쪽은 위에 콘스트 const { title, content, password, status } = req.body; 이 값들인 듯
+                    { _id: productId },
+                    {$set:
+                        {
+                            title: title,
+                            content: content,
+                            password: password,
+                            status: status
+                        }
+                    }
+                ); //제이슨 형태로 리턴 값 줄 것이다.
+                
+            } else {
+                return res.status(200).json({ success: true, message: "상품 정보 수정했습니다." });
+            } 
+            
+        } return res.status(401).json({ message: "상품을 수정할 권한이 없습니다." });
+        
+        //  else {
+        //     res.status(404).json({ success: false, message: "상품 조회에 실패하였습니다." });
+        // }
+    }
     catch {
-        return res.status(400).json({errorMessage: '데이터 형식이 올바르지 않습니다.' })
+        return res.status(404).json({ errorMessage: '데이터 형식이 올바르지 않습니다.' })
     }
 
 });
@@ -121,8 +132,6 @@ router.delete("/products/:productId", async (req, res) => {
 })
 
 module.exports = router;
-
-// 엄마 보고 싶어요 엄마 말이 다 맞았어요 엄마 잘못했어요
 
 
 
