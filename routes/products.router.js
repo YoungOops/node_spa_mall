@@ -126,8 +126,7 @@ router.delete("/products/:productId", async (req, res) => {
                 {$set: {password: password}}
                 
             );
-        }
-        return res.json({ message: "상품을 삭제하였습니다." });
+        }return res.json({ message: "상품을 삭제하였습니다." });
 
     }return res.status(401).json({message: "상품을 수정할 권한이 없습니다." });
 
