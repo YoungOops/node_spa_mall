@@ -80,8 +80,9 @@ router.put("/products/:productId", async (req, res) => {
         // const products = await Products.find({password}); ?
 
         const existsProducts = await Products.find({ _id: productId });
+        console.log(existsProducts)
 
-        if (existsProducts.length !== 0) {//existsProducts 값이 존재할 때만 실행?
+        if (existsProducts.length) {//existsProducts 값이 존재할 때만 실행?
             const product = existsProducts[0] //한 개를 뜻하는 듯 하다
             if (product.password === password) {
                 await Products.updateOne( // 업데이트 할 것이다. 프로덕츠를
@@ -97,9 +98,7 @@ router.put("/products/:productId", async (req, res) => {
                             status: status
                         }
                     }
-                );
-            } else {
-                return res.status(200).json({message: "상품 정보 수정했습니다." });
+                );return res.status(200).json({message: "상품 정보 수정했습니다." });
             }
         } return res.status(401).json({ message: "상품을 수정할 권한이 없습니다." });
         //  else {
@@ -114,13 +113,12 @@ router.put("/products/:productId", async (req, res) => {
 // 상품 삭제
 router.delete("/products/:productId", async (req, res) => {
     try {
-
         const { productId } = req.params;
         const { password } = req.body;
 
     // await Cart.deleteOne({_id:productId});
     const existsProducts = await Products.find({ _id: productId });
-    if (existsProducts !== true) {
+    if (existsProducts.length) {
         const product = existsProducts[0]
         if (product.password === password){
             await Product.deletOne(
@@ -131,10 +129,7 @@ router.delete("/products/:productId", async (req, res) => {
         }
         return res.json({ message: "상품을 삭제하였습니다." });
 
-    } else {
-        return res.status(401).json({message: "상품을 수정할 권한이 없습니다." });
-    }
-    
+    }return res.status(401).json({message: "상품을 수정할 권한이 없습니다." });
 
 } catch {
     return res.status(404).json({ errorMessage: '데이터 형식이 올바르지 않습니다.' })
